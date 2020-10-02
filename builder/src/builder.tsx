@@ -1,31 +1,52 @@
-import React from 'react';
-import _reduceRight from 'lodash/reduceRight';
+import React, { ErrorInfo, FunctionComponent } from 'react';
 import App from 'next/app';
+import { AppContext } from 'next/dist/pages/_app';
 
-import helpers from './helpers';
-import { MiddlewareFunctionName, NextAppMiddleware } from './types';
-
+// -----------------
+// ----- types -----
+// -----------------
 type NextAppBuilderOptions = {
     middleware: NextAppMiddleware[];
 };
 
 type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => App;
 
+export type NextAppMiddleware<T = {}> = {
+    id: string;
+
+    getInitialProps?(appContext: AppContext): T | Promise<T>;
+
+    Component?: FunctionComponent<T>;
+    /**
+     * Catches exceptions generated in descendant components. Unhandled exceptions will cause
+     * the entire component tree to unmount.
+     */
+    componentDidCatch?(error: Error, errorInfo: ErrorInfo): App['componentDidCatch'];
+};
+// -----------------
+// ---- helpers ----
+// -----------------
+const executeComponentDidCatchMiddleware = (allMiddleware, error, errorInfo) =>
+    allMiddleware.forEach(({ componentDidCatch }) => {
+        if (componentDidCatch) {
+            componentDidCatch(error, errorInfo);
+        }
+    });
+
+const renderPage = (allMiddleware, { Component, pageProps: { middlewareProps, ...props } }) =>
+    allMiddleware.filter(({ Component }) => !!Component)
+        .reduceRight(
+        (nestedElement, { Component: RenderComponent, id }) => (
+            <RenderComponent {...props} {...middlewareProps[id]}>
+                {nestedElement}
+            </RenderComponent>
+        ),
+        <Component {...props} />
+    );
+// -----------------
+// ---- builder ----
+// -----------------
 const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = [] }) => {
-    const { extractMiddleware, executeMiddleware, executeMiddlewareSync } = helpers(allMiddleware);
-
-    const componentMiddleware = extractMiddleware(MiddlewareFunctionName.Component);
-    const getInitialPropsMiddleware = extractMiddleware(MiddlewareFunctionName.getInitialProps);
-
-    const renderPage = ({ Component, pageProps: { middlewareProps, ...props } }) =>
-        _reduceRight(
-            componentMiddleware,
-            (nestedElement, { middleware: RenderComponent, id }) =>
-                <RenderComponent {...props} {...middlewareProps[id]}>
-                    {nestedElement}
-                </RenderComponent>,
-            <Component {...props} />
-        );
 
     class NextAppMiddlewareComponent extends App {
         static async getInitialProps({ Component, ctx, router }) {
@@ -43,40 +64,38 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
 
             const middlewareProps = {};
             const InternalAppTree = props => {
-                const enhancedPageProps = { ...pageProps, middlewareProps, ...props }
-                return (
-                    <AppTree pageProps={enhancedPageProps}/>
-                );
+                const enhancedPageProps = { ...pageProps, middlewareProps, ...props };
+                return <AppTree pageProps={enhancedPageProps} />;
+            };
+
+            for (let i = 0; i < allMiddleware.length; i += 1) {
+                const { getInitialProps, id } = allMiddleware[i];
+                if (getInitialProps) {
+                    // each loop iteration is delayed until the entire asynchronous operation completes
+                    middlewareProps[id] =
+                        (await getInitialProps({
+                            Component,
+                            router,
+                            ctx,
+                            AppTree: InternalAppTree
+                        })) || {}; // eslint-disable-line
+                }
             }
-            for (let i = 0; i < getInitialPropsMiddleware.length; i += 1) {
-                const { middleware, id } = getInitialPropsMiddleware[i];
-                // each loop iteration is delayed until the entire asynchronous operation completes
-                /* eslint-disable no-await-in-loop */
-                middlewareProps[id] =
-                    (await middleware(
-                        { Component, router, ctx, AppTree: InternalAppTree },
-                        extendPageProps
-                    )) || {};
-                /* eslint-enable no-await-in-loop */
-            }
-            return { pageProps: { ...pageProps, middlewareProps } };
+            extendPageProps(middlewareProps);
+            return { pageProps };
         }
 
-        /**
-         * Allows middleware to execute code
-         */
-        async componentDidCatch(error, errorInfo) {
-            await executeMiddlewareSync('componentDidCatch', error, errorInfo);
+        componentDidCatch(error, errorInfo) {
+            executeComponentDidCatchMiddleware(allMiddleware, error, errorInfo);
             // This is needed to render errors correctly in development / production
             super.componentDidCatch(error, errorInfo);
         }
 
         render() {
             const { Component, pageProps, ...otherProps } = this.props;
-            return renderPage({ Component, pageProps: { ...pageProps, ...otherProps } });
+            return renderPage(allMiddleware, { Component, pageProps: { ...pageProps, ...otherProps } });
         }
     }
-    NextAppMiddlewareComponent.displayName = 'NextAppMiddlewareComponent';
     return NextAppMiddlewareComponent;
 };
 
