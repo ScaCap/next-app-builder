@@ -1,6 +1,6 @@
 {
   "name": "@scacap/next-app-builder",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha",
   "description": "Middleware pipeline to create next.js App.",
   "main": "./dist/builder.js",
   "author": "frontend@sclable.capital",
@@ -9,9 +9,14 @@
     "next": "^9.4.4",
     "react": "^16.13.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScaCap/next-app-builder.git"
+  },
   "scripts": {
     "eslint-fix": "eslint './src/**/*.{js,ts,tsx}' --fix",
     "cleanup": "rm -rf dist",
+    "build-types": "tsc --emitDeclarationOnly",
     "transpile": "babel src --extensions '.js,.ts,.tsx' --out-dir dist",
     "prepublishOnly": "yarn cleanup && yarn transpile && yarn build-types",
     "postpublish": "yarn cleanup"
