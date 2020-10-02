@@ -34,20 +34,21 @@ const executeComponentDidCatchMiddleware = (allMiddleware, error, errorInfo) =>
     });
 
 const renderPage = (allMiddleware, { Component, pageProps: { middlewareProps, ...props } }) =>
-    allMiddleware.filter(({ Component }) => !!Component)
+    allMiddleware
+        .filter(({ Component }) => !!Component)
         .reduceRight(
-        (nestedElement, { Component: RenderComponent, id }) => (
-            <RenderComponent {...props} {...middlewareProps[id]}>
-                {nestedElement}
-            </RenderComponent>
-        ),
-        <Component {...props} />
-    );
+            (nestedElement, { Component: RenderComponent, id }) => (
+                <RenderComponent {...props} {...middlewareProps[id]}>
+                    {nestedElement}
+                </RenderComponent>
+            ),
+            <Component {...props} />
+        );
 // -----------------
 // ---- builder ----
 // -----------------
+// @ts-ignore
 const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = [] }) => {
-
     class NextAppMiddlewareComponent extends App {
         static async getInitialProps({ Component, ctx, router }) {
             let pageProps = {};
@@ -81,7 +82,7 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
                         })) || {}; // eslint-disable-line
                 }
             }
-            extendPageProps(middlewareProps);
+            extendPageProps({ middlewareProps });
             return { pageProps };
         }
 
@@ -93,7 +94,10 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
 
         render() {
             const { Component, pageProps, ...otherProps } = this.props;
-            return renderPage(allMiddleware, { Component, pageProps: { ...pageProps, ...otherProps } });
+            return renderPage(allMiddleware, {
+                Component,
+                pageProps: { ...pageProps, ...otherProps }
+            });
         }
     }
     return NextAppMiddlewareComponent;
