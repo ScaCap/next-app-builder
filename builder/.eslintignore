@@ -1,0 +1,6 @@
+.next/*
+coverage/*
+locales/*
+deploy/*
+mock/*
+cypress/*

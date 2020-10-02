@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "./lib",
+    "declaration": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "strictNullChecks": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "forceConsistentCasingInFileNames": true,
+    "noErrorTruncation": true,
+    "resolveJsonModule": true,
+    "lib": ["es6", "dom"],
+    "esModuleInterop": true,
+    "listEmittedFiles":true
+  },
+  "exclude": ["node_modules", "**/*.test.js", "lib"],
+  "include": ["src"]
+}
