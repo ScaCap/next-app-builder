@@ -65,29 +65,10 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
         /**
          * Allows middleware to execute code
          */
-        constructor(props) {
-            super(props);
-            executeMiddlewareSync(MiddlewareFunctionName.constructor, props);
-        }
-
-        /**
-         * Allows middleware to execute (async) code
-         */
-        async componentDidMount() {
-            await executeMiddleware('componentDidMount', this.props);
-        }
-
-        /**
-         * Allows middleware to execute code
-         */
         async componentDidCatch(error, errorInfo) {
             await executeMiddlewareSync('componentDidCatch', error, errorInfo);
             // This is needed to render errors correctly in development / production
             super.componentDidCatch(error, errorInfo);
-        }
-
-        componentWillUnmount() {
-            executeMiddlewareSync('componentWillUnmount');
         }
 
         render() {
@@ -95,6 +76,7 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
             return renderPage({ Component, pageProps: { ...pageProps, ...otherProps } });
         }
     }
+    NextAppMiddlewareComponent.displayName = 'NextAppMiddlewareComponent';
     return NextAppMiddlewareComponent;
 };
 
