@@ -1,0 +1,73 @@
+name: PR checks
+
+env:
+  GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
+  HUSKY_SKIP_INSTALL: true
+
+on: pull_request
+
+jobs:
+  eslint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Restore node_modules cache
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install packages
+        run: yarn --frozen-lockfile
+      - name: 'ESLint'
+        run: yarn eslint
+  typecheck:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Restore node_modules cache
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install packages
+        run: yarn --frozen-lockfile
+      - name: 'Type check'
+        run: yarn typecheck --stream
+  tests:
+    runs-on: ubuntu-18.04
+    steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-node@v1
+          with:
+            node-version: 12
+        - name: Restore node_modules cache
+          uses: actions/cache@v2
+          with:
+            path: '**/node_modules'
+            key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+        - name: Install packages
+          run: yarn --frozen-lockfile
+        - name: 'Tests'
+          run: yarn test --stream
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-node@v1
+          with:
+            node-version: 12
+        - name: Restore node_modules cache
+          uses: actions/cache@v2
+          with:
+            path: '**/node_modules'
+            key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+        - name: Install packages
+          run: yarn --frozen-lockfile
+        - name: 'Build'
+          run: yarn prepublishOnly --stream
