@@ -38,7 +38,7 @@ jobs:
       - name: Install packages
         run: yarn --frozen-lockfile
       - name: 'Type check'
-        run: yarn typecheck --stream
+        run: yarn typecheck
   tests:
     runs-on: ubuntu-18.04
     steps:
@@ -54,7 +54,7 @@ jobs:
         - name: Install packages
           run: yarn --frozen-lockfile
         - name: 'Tests'
-          run: yarn test --stream
+          run: yarn test
   build:
     runs-on: ubuntu-18.04
     steps:
@@ -70,4 +70,4 @@ jobs:
         - name: Install packages
           run: yarn --frozen-lockfile
         - name: 'Build'
-          run: yarn prepublishOnly --stream
+          run: yarn prepublishOnly
