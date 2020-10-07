@@ -23,7 +23,7 @@ type NextAppBuilderOptions = {
     middleware: NextAppMiddleware[];
 };
 
-type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => App;
+type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => typeof App;
 
 // -----------------
 // ---- helpers ----
@@ -49,7 +49,6 @@ const renderPage = (allMiddleware, { Component, pageProps: { middlewareProps, ..
 // -----------------
 // ---- builder ----
 // -----------------
-// @ts-ignore
 const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = [] }) => {
     class NextAppMiddlewareComponent extends App {
         static async getInitialProps({ Component, ctx, router }) {
@@ -75,13 +74,15 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
                 const { getInitialProps, id } = allMiddleware[i];
                 if (getInitialProps) {
                     // each loop iteration is delayed until the entire asynchronous operation completes
+                    /* eslint-disable no-await-in-loop */
                     middlewareProps[id] =
                         (await getInitialProps({
                             Component,
                             router,
                             ctx,
                             AppTree: InternalAppTree
-                        })) || {}; // eslint-disable-line
+                        })) || {};
+                    /* eslint-enable no-await-in-loop */
                 }
             }
             extendPageProps({ middlewareProps });
