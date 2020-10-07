@@ -5,13 +5,8 @@ import { AppContext } from 'next/dist/pages/_app';
 // -----------------
 // ----- types -----
 // -----------------
-type NextAppBuilderOptions = {
-    middleware: NextAppMiddleware[];
-};
 
-type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => App;
-
-export type NextAppMiddleware<T = {}> = {
+export type NextAppMiddleware<T = Record<string, unknown>> = {
     id: string;
 
     getInitialProps?(appContext: AppContext): T | Promise<T>;
@@ -23,6 +18,13 @@ export type NextAppMiddleware<T = {}> = {
      */
     componentDidCatch?(error: Error, errorInfo: ErrorInfo): App['componentDidCatch'];
 };
+
+type NextAppBuilderOptions = {
+    middleware: NextAppMiddleware[];
+};
+
+type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => App;
+
 // -----------------
 // ---- helpers ----
 // -----------------
@@ -35,7 +37,7 @@ const executeComponentDidCatchMiddleware = (allMiddleware, error, errorInfo) =>
 
 const renderPage = (allMiddleware, { Component, pageProps: { middlewareProps, ...props } }) =>
     allMiddleware
-        .filter(({ Component }) => !!Component)
+        .filter(({ Component: RenderComponent }) => !!RenderComponent)
         .reduceRight(
             (nestedElement, { Component: RenderComponent, id }) => (
                 <RenderComponent {...props} {...middlewareProps[id]}>
