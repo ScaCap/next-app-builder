@@ -21,7 +21,8 @@
     "build:transpile": "babel src --extensions '.js,.ts,.tsx' --out-dir dist",
     "prepublishOnly": "yarn cleanup && yarn build:transpile && yarn build:types",
     "postpublish": "yarn cleanup",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest --passWithNoTests"
   },
   "devDependencies": {
     "@babel/cli": "7.10.3",
