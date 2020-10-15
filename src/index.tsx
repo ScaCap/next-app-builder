@@ -7,8 +7,6 @@ import { AppContext } from 'next/dist/pages/_app';
 // -----------------
 
 export type NextAppMiddleware<T = Record<string, unknown>> = {
-    id: string;
-
     getInitialProps?(appContext: AppContext): T | Promise<T>;
 
     Component?: FunctionComponent<T>;
@@ -49,7 +47,12 @@ const renderPage = (allMiddleware, { Component, pageProps: { middlewareProps, ..
 // -----------------
 // ---- builder ----
 // -----------------
-const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = [] }) => {
+const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
+    const allMiddleware = middleware.map((singleMiddleware, index) => ({
+        ...singleMiddleware,
+        id: `nextAppMiddleware-${index}`
+    }));
+
     class NextAppMiddlewareComponent extends App {
         static async getInitialProps({ Component, ctx, router }) {
             let pageProps = {};
@@ -64,28 +67,34 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
                 extendPageProps(await Component.getInitialProps(ctx));
             }
 
+            let middlewareProps;
+
             const InternalAppTree = props => {
                 const enhancedPageProps = { ...pageProps, middlewareProps, ...props };
                 return <AppTree pageProps={enhancedPageProps} />;
             };
 
-            const allInitialProps = await Promise.all(allMiddleware
-                .filter(({getInitialProps}) => !!getInitialProps)
-                .map(async ({ getInitialProps, id }) => {
-                    const initialProps = await getInitialProps({
-                        Component,
-                        router,
-                        ctx,
-                        AppTree: InternalAppTree
-                    });
-                    return ({ initialProps, id })
-                })
+            const allInitialProps = await Promise.all(
+                allMiddleware
+                    .filter(({ getInitialProps }) => !!getInitialProps)
+                    .map(async ({ getInitialProps, id }) => {
+                        const initialProps = await getInitialProps({
+                            Component,
+                            router,
+                            ctx,
+                            AppTree: InternalAppTree
+                        });
+                        return { initialProps, id };
+                    })
             );
 
-            const middlewareProps = allInitialProps.reduce((props, {id, initialProps}) => ({
-                ...props,
-                [id]: initialProps
-            }), {});
+            middlewareProps = allInitialProps.reduce(
+                (props, { id, initialProps }) => ({
+                    ...props,
+                    [id]: initialProps
+                }),
+                {}
+            );
 
             extendPageProps({ middlewareProps });
             return { pageProps };
