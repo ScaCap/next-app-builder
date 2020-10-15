@@ -5,13 +5,8 @@ import { AppContext } from 'next/dist/pages/_app';
 // -----------------
 // ----- types -----
 // -----------------
-type NextAppBuilderOptions = {
-    middleware: NextAppMiddleware[];
-};
 
-type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => App;
-
-export type NextAppMiddleware<T = {}> = {
+export type NextAppMiddleware<T = Record<string, unknown>> = {
     id: string;
 
     getInitialProps?(appContext: AppContext): T | Promise<T>;
@@ -23,6 +18,13 @@ export type NextAppMiddleware<T = {}> = {
      */
     componentDidCatch?(error: Error, errorInfo: ErrorInfo): App['componentDidCatch'];
 };
+
+type NextAppBuilderOptions = {
+    middleware: NextAppMiddleware[];
+};
+
+type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => typeof App;
+
 // -----------------
 // ---- helpers ----
 // -----------------
@@ -35,7 +37,7 @@ const executeComponentDidCatchMiddleware = (allMiddleware, error, errorInfo) =>
 
 const renderPage = (allMiddleware, { Component, pageProps: { middlewareProps, ...props } }) =>
     allMiddleware
-        .filter(({ Component }) => !!Component)
+        .filter(({ Component: RenderComponent }) => !!RenderComponent)
         .reduceRight(
             (nestedElement, { Component: RenderComponent, id }) => (
                 <RenderComponent {...props} {...middlewareProps[id]}>
@@ -47,7 +49,6 @@ const renderPage = (allMiddleware, { Component, pageProps: { middlewareProps, ..
 // -----------------
 // ---- builder ----
 // -----------------
-// @ts-ignore
 const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = [] }) => {
     class NextAppMiddlewareComponent extends App {
         static async getInitialProps({ Component, ctx, router }) {
@@ -73,13 +74,15 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
                 const { getInitialProps, id } = allMiddleware[i];
                 if (getInitialProps) {
                     // each loop iteration is delayed until the entire asynchronous operation completes
+                    /* eslint-disable no-await-in-loop */
                     middlewareProps[id] =
                         (await getInitialProps({
                             Component,
                             router,
                             ctx,
                             AppTree: InternalAppTree
-                        })) || {}; // eslint-disable-line
+                        })) || {};
+                    /* eslint-enable no-await-in-loop */
                 }
             }
             extendPageProps({ middlewareProps });
