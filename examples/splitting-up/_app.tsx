@@ -52,7 +52,7 @@ class CustomApp extends App {
         }
     }
 
-    async componentDidCatch(error, errorInfo) {
+    componentDidCatch(error, errorInfo) {
         Sentry.configureScope(scope => {
             Object.keys(errorInfo).forEach(key => {
                 scope.setExtra(key, errorInfo[key]);
