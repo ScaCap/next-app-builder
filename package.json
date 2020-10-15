@@ -22,7 +22,7 @@
     "prepublishOnly": "yarn cleanup && yarn build:transpile && yarn build:types",
     "postpublish": "yarn cleanup",
     "typecheck": "tsc --noEmit",
-    "test": "jest --passWithNoTests"
+    "test": "echo 'Add tests'"
   },
   "devDependencies": {
     "@babel/cli": "7.10.3",
