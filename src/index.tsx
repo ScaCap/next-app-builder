@@ -64,27 +64,29 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware: allMiddleware = 
                 extendPageProps(await Component.getInitialProps(ctx));
             }
 
-            const middlewareProps = {};
             const InternalAppTree = props => {
                 const enhancedPageProps = { ...pageProps, middlewareProps, ...props };
                 return <AppTree pageProps={enhancedPageProps} />;
             };
 
-            for (let i = 0; i < allMiddleware.length; i += 1) {
-                const { getInitialProps, id } = allMiddleware[i];
-                if (getInitialProps) {
-                    // each loop iteration is delayed until the entire asynchronous operation completes
-                    /* eslint-disable no-await-in-loop */
-                    middlewareProps[id] =
-                        (await getInitialProps({
-                            Component,
-                            router,
-                            ctx,
-                            AppTree: InternalAppTree
-                        })) || {};
-                    /* eslint-enable no-await-in-loop */
-                }
-            }
+            const allInitialProps = await Promise.all(allMiddleware
+                .filter(({getInitialProps}) => !!getInitialProps)
+                .map(async ({ getInitialProps, id }) => {
+                    const initialProps = await getInitialProps({
+                        Component,
+                        router,
+                        ctx,
+                        AppTree: InternalAppTree
+                    });
+                    return ({ initialProps, id })
+                })
+            );
+
+            const middlewareProps = allInitialProps.reduce((props, {id, initialProps}) => ({
+                ...props,
+                [id]: initialProps
+            }), {});
+
             extendPageProps({ middlewareProps });
             return { pageProps };
         }
