@@ -3,8 +3,18 @@ import App from 'next/app';
 import { AppContext } from 'next/dist/pages/_app';
 
 export type NextAppMiddleware<T = Record<string, unknown>> = {
+  /**
+   * human readable identifier of middleware
+   */
   name?: string;
+  /**
+   * Static function which is executed before rendering.
+   * Used for blocking data requirements for every single page in your application, e.g. server side data fetching.
+   */
   getInitialProps?(appContext: AppContext): T | Promise<T>;
+  /**
+   * Component which is rendered in custom App.
+   */
   Component?: FunctionComponent<T>;
   componentDidCatch?(error: Error, errorInfo: ErrorInfo): App['componentDidCatch'];
 };
@@ -15,11 +25,7 @@ type NextAppBuilderOptions = {
 
 type NextAppMiddlewareBuilder = (options: NextAppBuilderOptions) => typeof App;
 
-type ExecuteComponentDidCatchMiddleware = (
-  allMiddlewarec,
-  error: Error,
-  _errorInfo: ErrorInfo
-) => void;
+type ExecuteComponentDidCatchMiddleware = (allMiddlewarec, error: Error, _errorInfo: ErrorInfo) => void;
 
 const executeComponentDidCatchMiddleware: ExecuteComponentDidCatchMiddleware = (allMiddleware, error, errorInfo) =>
   allMiddleware.forEach(({ componentDidCatch }) => {
@@ -40,6 +46,35 @@ const renderPage = (allMiddleware, { Component: PageComponent, pageProps: { midd
       <PageComponent {...props} />
     );
 
+/**
+ * Generates a custom next App using middleware.
+ *
+ * Usage
+ *
+ * ```
+ *
+ * const getInitialProps = ({ router }) => {
+ *    const data = await fetch(getDataForPage(router.pathname));
+ *    return { data };
+ * }
+ *
+ * const ssrDataMiddleware = {
+ *   Component: SsrDataProvider,
+ *   getInitialProps
+ * };
+ * const layoutMiddleware = { Component: LayoutComponent };
+ *
+ * nextAppBuilder({
+ *   middleware: [
+ *     ssrDataMiddleware,
+ *     layoutMiddleware
+ *   ]
+ * })
+ *
+ * ```
+ *
+ * @param middleware
+ */
 const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
   const allMiddleware = middleware.map((singleMiddleware, index) => ({
     ...singleMiddleware,
@@ -47,7 +82,7 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
   }));
 
   class NextAppMiddlewareComponent extends App {
-    static async getInitialProps({ Component, ctx, router }): Promise<{pageProps: any}> {
+    static async getInitialProps({ Component, ctx, router }): Promise<{ pageProps: any }> {
       let pageProps = {};
       const { AppTree } = ctx;
       const extendPageProps = props => {

@@ -4,7 +4,6 @@
   "description": "Middleware pipeline to create next.js App.",
   "main": "./dist/builder.js",
   "author": "frontend@sclable.capital",
-  "license": "MIT",
   "peerDependencies": {
     "next": "^9.4.4",
     "react": "^16.13.1"
@@ -13,6 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/ScaCap/next-app-builder.git"
   },
+  "bugs": {
+    "url": "https://github.com/ScaCap/next-app-builder/issues"
+  },
+  "license": "Apache 2.0",
   "scripts": {
     "eslint-fix": "eslint './src/**/*.{ts,tsx}' --fix",
     "eslint": "eslint './src/**/*.{ts,tsx}'",
@@ -22,7 +25,8 @@
     "prepublishOnly": "yarn cleanup && yarn build:transpile && yarn build:types",
     "postpublish": "yarn cleanup",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'Add tests'"
+    "test": "echo 'Add tests'",
+    "pp": "prettier README.md"
   },
   "devDependencies": {
     "@babel/cli": "7.10.3",

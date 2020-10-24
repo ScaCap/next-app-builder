@@ -13,3 +13,54 @@ For more details, see [offical documentation](https://nextjs.org/docs/advanced-f
 
 ### Why a builder?
 
+Generates a custom next App using middleware.
+
+Before:
+
+ ```
+ class CustomNextApp extends App {
+   static async getInitialProps({ Component, ctx, router }) {
+     const initialPageProps = await (Component.getInitialProps ? (Component.getInitialProps) : {});
+     const data = await fetch(getDataForPage(router.pathname));
+     return {
+       pageProps: {
+         ...initialPageProps,
+         data
+       }
+     }
+   }
+
+  render() {
+    const { Component, pageProps } = this.props;
+    return (
+      <SsrDataProvider data={pageProps.ssrData}>
+         <LayoutComponent>
+           <Component {...pageProps} />
+         </LayoutComponent>
+       </SsrDataProvider>
+    );
+  }
+ }
+ ```
+After:
+ ```
+
+ const getInitialProps = ({ router }) => {
+    const data = await fetch(getDataForPage(router.pathname));
+    return { data };
+ }
+
+ const ssrDataMiddleware = {
+   Component: SsrDataProvider,
+   getInitialProps
+ };
+ const layoutMiddleware = { Component: LayoutComponent };
+
+ nextAppBuilder({
+   middleware: [
+     ssrDataMiddleware,
+     layoutMiddleware
+   ]
+ })
+
+ ```
