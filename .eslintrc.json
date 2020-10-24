@@ -34,20 +34,6 @@
         "extensions": [".js", ".tsx"]
       }
     ],
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        "devDependencies": [
-          "**/*.stories.{js,ts,tsx}",
-          "**/*.test.js",
-          "**/*.test.tsx",
-          "jest*.js",
-          "deploy.js",
-          "e2e_tests/**/*.js",
-          "test-utils/**/*.js"
-        ]
-      }
-    ],
     "@typescript-eslint/no-var-requires": "warn"
   },
   "plugins": [
@@ -63,17 +49,13 @@
   },
   "overrides": [
     {
-      "files": ["*.test.client.js", "*.test.server.js", "*.test.js"],
+      "files": ["*.test.js"],
       "rules": {
         "global-require": 0,
         "no-underscore-dangle": 0
       }
     }
   ],
-  "globals": {
-    "cy": true,
-    "Cypress": true
-  },
   "settings": {
     "react": {
       "version": "detect"
