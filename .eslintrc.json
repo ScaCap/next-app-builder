@@ -22,15 +22,8 @@
         "tsx": "never"
       }
     ],
-    "prettier/prettier": [
-      "error",
-      {
-        "singleQuote": true,
-        "tabWidth": 4,
-        "printWidth": 100
-      }
-    ],
-    "react/jsx-props-no-spreading": "warn",
+    "react/jsx-props-no-spreading": "off",
+    "no-console": "off",
     "react/prop-types": "off",
     "react/default-props-match-prop-types": "off",
     "react/jsx-no-duplicate-props": ["error", { "ignoreCase": false }],
