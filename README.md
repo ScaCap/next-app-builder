@@ -45,15 +45,14 @@ Before:
 After:
  ```
 
- const getInitialProps = ({ router }) => {
-    const data = await fetch(getDataForPage(router.pathname));
-    return { data };
- }
-
  const ssrDataMiddleware = {
    Component: SsrDataProvider,
-   getInitialProps
+   getInitialProps: ({ router }) => {
+     const data = await fetch(getDataForPage(router.pathname));
+     return { data };
+   }
  };
+ 
  const layoutMiddleware = { Component: LayoutComponent };
 
  nextAppBuilder({
