@@ -47,15 +47,14 @@ class CustomNextApp extends App {
 After:
 
 ```javascript
-const getInitialProps = ({ router }) => {
-  const data = await fetch(getDataForPage(router.pathname));
-  return { data };
-};
-
 const ssrDataMiddleware = {
   Component: SsrDataProvider,
-  getInitialProps
+  getInitialProps: ({ router }) => {
+    const data = await fetch(getDataForPage(router.pathname));
+    return { data };
+  }
 };
+
 const layoutMiddleware = { Component: LayoutComponent };
 
 nextAppBuilder({
@@ -71,4 +70,4 @@ For more details, see [offical documentation](https://nextjs.org/docs/advanced-f
 
 ## Contributing
 
-Let's build together our v1! Pull-requests and issue reports are welcome :raised-hands:
+Let's build together our v1! Pull-requests and issue reports are welcome.
