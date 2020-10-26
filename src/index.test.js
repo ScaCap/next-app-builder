@@ -22,13 +22,15 @@ describe('App Builder', () => {
 
     it('should render middleware Components & page in correct order', async () => {
         const middleware1 = { Component: ({ children }) => <div>{children}</div> };
+        middleware1.Component.displayName = 'Component1';
         const middleware2 = { Component: ({ children }) => <div>{children}</div> };
+        middleware2.Component.displayName = 'Component2';
 
         const wrapper = await shallowPage([middleware1, middleware2]);
 
-        const firstElement = wrapper.childAt(0);
-        expect(firstElement.is(middleware1.Component));
-        expect(firstElement.childAt(0).is(Page));
+        const firstElement = wrapper.find(middleware1.Component);
+        const secondElement = firstElement.find(middleware2.Component);
+        expect(secondElement.find(Page).exists()).toBe(true);
     });
 
     it('should pass getInitialProps only to same middleware Component', async () => {
