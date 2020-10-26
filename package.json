@@ -2,9 +2,8 @@
   "name": "@scacap/next-app-builder",
   "version": "0.0.3-alpha",
   "description": "Middleware pipeline to create next.js App.",
-  "main": "./dist/builder.js",
+  "main": "./dist/index.js",
   "author": "frontend@sclable.capital",
-  "license": "MIT",
   "peerDependencies": {
     "next": "^9.4.4",
     "react": "^16.13.1"
@@ -13,6 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/ScaCap/next-app-builder.git"
   },
+  "bugs": {
+    "url": "https://github.com/ScaCap/next-app-builder/issues"
+  },
+  "license": "Apache-2.0",
   "scripts": {
     "eslint-fix": "eslint './src/**/*.{ts,tsx}' --fix",
     "eslint": "eslint './src/**/*.{ts,tsx}'",
