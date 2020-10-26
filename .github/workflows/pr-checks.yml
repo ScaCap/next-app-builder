@@ -55,14 +55,6 @@ jobs:
           run: yarn --frozen-lockfile
         - name: 'Tests'
           run: yarn test
-        - name: Run changed tests with coverage
-          run: yarn test --coverage --changedSince=${{ github.event.pull_request.base.sha }}
-        - name: Add coverage comment
-          continue-on-error: true
-          uses: romeovs/lcov-reporter-action@v0.2.16
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            lcov-file: ./coverage/lcov.info
   build:
     runs-on: ubuntu-18.04
     steps:
