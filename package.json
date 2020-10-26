@@ -2,7 +2,7 @@
   "name": "@scacap/next-app-builder",
   "version": "0.0.3-alpha",
   "description": "Middleware pipeline to create next.js App.",
-  "main": "./dist/builder.js",
+  "main": "./dist/index.js",
   "author": "frontend@sclable.capital",
   "peerDependencies": {
     "next": "^9.4.4",
