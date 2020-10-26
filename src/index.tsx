@@ -130,7 +130,7 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
       );
 
       extendPageProps({ middlewareProps });
-      return { pageProps: { ...pageProps, ...middlewareProps } };
+      return { pageProps };
     }
 
     componentDidCatch(error, errorInfo): void {
