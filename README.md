@@ -2,7 +2,6 @@
 
 [![Version Badge][npm-version-svg]][package-url]
 [![GZipped size][npm-minzip-svg]][bundlephobia-url]
-![Test](https://github.com/thebuilder/react-intersection-observer/workflows/Test/badge.svg)
 [![dependency status][deps-svg]][deps-url]
 [![dev dependency status][dev-deps-svg]][dev-deps-url]
 [![License][license-image]][license-url]
