@@ -1,6 +1,6 @@
 {
   "name": "@scacap/next-app-builder",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Middleware pipeline to create next.js App.",
   "main": "./dist/index.js",
   "author": "frontend@sclable.capital",
