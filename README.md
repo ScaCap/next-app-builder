@@ -101,6 +101,29 @@ export default nextAppBuilder({
 
 [![Edit useInView](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/custom-next-app-15s4p?fontsize=14&hidenavigation=1&file=/pages/_app.tsx)
 
+## API
+
+### nextAppBuilder
+
+Creates a custom app that should be the default export of `pages/_app.js`.
+
+```javascript
+const CustomApp = appBuilder({
+  middleware: [
+    // middlewares here
+  ]
+});
+```
+
+### middleware
+
+An object containing the following fields:
+
+- **name**: a human readable identifier of middleware. Optional.
+- **getInitialProps**: a function which is executed before rendering. Used for blocking data requirements for every single page in your application, e.g. server side data fetching. Optional.
+- **Component**: the React component which is rendered in custom App. It's a wrapper component that will receive each page as children. Typically used for adding providers in the App level, e.g. css theme provider. Optional.
+- **componentDidCatch**: invoked when a descendant component throws an error. See more details in the [React docs](https://reactjs.org/docs/react-component.html#componentdidcatch). Optional.
+
 ## Caveats
 
 Internally, you will be adding a custom getInitialProps in your App. This will disable Automatic Static Optimization in pages without Static Generation.
