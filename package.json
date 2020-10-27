@@ -1,6 +1,6 @@
 {
   "name": "@scacap/next-app-builder",
-  "version": "0.0.3-alpha",
+  "version": "0.0.0",
   "description": "Middleware pipeline to create next.js App.",
   "main": "./dist/index.js",
   "author": "frontend@sclable.capital",
@@ -27,6 +27,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest"
   },
+  "private": false,
   "devDependencies": {
     "@babel/cli": "7.10.3",
     "@babel/core": "7.10.3",
