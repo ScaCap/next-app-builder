@@ -72,6 +72,35 @@ nextAppBuilder({
 });
 ```
 
+## Installation
+
+Install using Yarn:
+
+```sh
+yarn add @scacap/next-app-builder
+```
+
+or NPM:
+
+```sh
+npm install @scacap/next-app-builder --save
+```
+
+## Usage
+
+```javascript
+// pages/_app.js
+import nextAppBuilder from '@scacap/next-app-builder';
+import materialUiMiddleware from '../middlewares/material-ui';
+import theme from '../theme';
+
+export default nextAppBuilder({
+  middleware: [materialUiMiddleware(theme)]
+});
+```
+
+[![Edit useInView](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/custom-next-app-15s4p?fontsize=14&hidenavigation=1&file=/pages/_app.tsx)
+
 ## Caveats
 
 Internally, you will be adding a custom getInitialProps in your App. This will disable Automatic Static Optimization in pages without Static Generation.
@@ -90,7 +119,7 @@ Let's build together our v1! Pull-requests and issue reports are welcome.
 [deps-svg]: https://david-dm.org/scacap/next-app-builder.svg
 [dev-deps-url]: https://david-dm.org/scacap/next-app-builder?type=dev
 [dev-deps-svg]: https://david-dm.org/scacap/next-app-builder/dev-status.svg
-[license-url]: [https://www.apache.org/licenses/LICENSE-2.0]
+[license-url]: https://www.apache.org/licenses/LICENSE-2.0
 [license-image]: https://img.shields.io/npm/l/@scacap/next-app-builder.svg
 [downloads-url]: https://npm-stat.com/charts.html?package=@scacap/next-app-builder
 [downloads-image]: https://img.shields.io/npm/dm/@scacap/next-app-builder.svg
