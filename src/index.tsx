@@ -136,6 +136,7 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
     componentDidCatch(error, errorInfo): void {
       executeComponentDidCatchMiddleware(allMiddleware, error, errorInfo);
       // This is needed to render errors correctly in development / production
+      // @ts-ignore
       super.componentDidCatch(error, errorInfo);
     }
 
