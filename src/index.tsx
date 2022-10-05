@@ -146,6 +146,7 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
 
       return renderPage(allMiddleware, {
         Component,
+        // eslint-disable-next-line
         // @ts-ignore
         pageProps: { ...pageProps, ...otherProps }
       });
