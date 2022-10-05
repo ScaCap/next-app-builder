@@ -143,8 +143,10 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
 
     render(): JSX.Element {
       const { Component, pageProps, ...otherProps } = this.props;
+
       return renderPage(allMiddleware, {
         Component,
+        // @ts-ignore
         pageProps: { ...pageProps, ...otherProps }
       });
     }
