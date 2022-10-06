@@ -143,8 +143,11 @@ const nextAppBuilder: NextAppMiddlewareBuilder = ({ middleware = [] }) => {
 
     render(): JSX.Element {
       const { Component, pageProps, ...otherProps } = this.props;
+
       return renderPage(allMiddleware, {
         Component,
+        // eslint-disable-next-line
+        // @ts-ignore
         pageProps: { ...pageProps, ...otherProps }
       });
     }
